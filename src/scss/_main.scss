@@ -1,0 +1,44 @@
+.main {
+  width: 320px;
+  height: 320px;
+  background: $white2;
+  border-radius: 6.4px;
+  display: grid;
+  place-items: center;
+
+  .text {
+    text-align: center;
+    h1 {
+      font-family: Karla;
+      font-weight: 700;
+      font-size: 25.6px;
+      line-height: 30px;
+      letter-spacing: -0.03em;
+      color: rgba(43, 40, 58, 1);
+      margin-bottom: 7.68px;
+    }
+
+    p {
+      font-size: 13.1072px;
+      line-height: 16px;
+      letter-spacing: -0.03em;
+      color: rgba(74, 78, 116, 1);
+      height: 48px;
+      width: 232.96px;
+    }
+  }
+}
+
+button {
+  width: 92.16px;
+  height: 35.84px;
+  background: $blue;
+  border: none;
+  font-family: Karla;
+  font-weight: 700;
+  font-size: 16.384px;
+  line-height: 19px;
+  color: rgba(255, 255, 255, 1);
+  border-radius: 3.81px;
+  cursor: pointer;
+}
