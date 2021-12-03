@@ -1,32 +1,81 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
+import Confetti from "react-confetti";
 
 import Die from "./Die";
 
 function App() {
+  const [diceArray, setDiceArray] = useState(allNewDice);
+
+  const [tenzies, setTenzies] = useState(false);
+
+  useEffect(() => {
+    let die;
+
+    diceArray.forEach(item => {
+      if (item.isHeld === true) {
+        die = item.value;
+      }
+    });
+
+    const isAllHeld = diceArray.every(item => item.isHeld === true);
+    const isDiceEqual = diceArray.every(item => item.value === die);
+
+    if (isAllHeld && isDiceEqual) {
+      setTenzies(true);
+      console.log("You won");
+    }
+  }, [diceArray]);
+
+  function generateNewDie() {
+    return {
+      value: Math.floor(Math.random() * 6) + 1,
+      isHeld: false,
+      id: nanoid(),
+    };
+  }
+
   function allNewDice() {
     const newDiceArray = [];
     for (let i = 0; i < 10; i++) {
-      newDiceArray.push({
-        value: Math.floor(Math.random() * 6) + 1,
-        isHeld: false,
-        id: nanoid(),
-      });
+      newDiceArray.push(generateNewDie());
     }
     return newDiceArray;
   }
 
-  const [diceArray, setDiceArray] = useState(allNewDice);
-  const diceElements = diceArray.map(dice => (
-    <Die key={dice.id} value={dice.value} isHeld={dice.isHeld} />
-  ));
-
   function rollDice() {
-    setDiceArray(allNewDice);
+    if (tenzies) {
+      setTenzies(false);
+      setDiceArray(allNewDice());
+    } else {
+      setDiceArray(prevDiceArray =>
+        prevDiceArray.map(dice =>
+          dice.isHeld === true ? dice : generateNewDie()
+        )
+      );
+    }
   }
+
+  function holdDice(diceId) {
+    setDiceArray(prevDiceArray =>
+      prevDiceArray.map(dice =>
+        dice.id === diceId ? { ...dice, isHeld: !dice.isHeld } : dice
+      )
+    );
+  }
+
+  const diceElements = diceArray.map(dice => (
+    <Die
+      key={dice.id}
+      value={dice.value}
+      isHeld={dice.isHeld}
+      handleClick={() => holdDice(dice.id)}
+    />
+  ));
 
   return (
     <main className="main">
+      {tenzies && <Confetti />}
       <div className="text">
         <h1>Tenzies</h1>
         <p>
@@ -35,7 +84,7 @@ function App() {
         </p>
       </div>
       <div className="die--container">{diceElements}</div>
-      <button onClick={rollDice}>Roll</button>
+      <button onClick={rollDice}>{tenzies ? "New Game" : "Roll"}</button>
     </main>
   );
 }
