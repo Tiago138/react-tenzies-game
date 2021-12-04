@@ -22,16 +22,10 @@ function App() {
   }, [bestRoll]);
 
   useEffect(() => {
-    let die;
-
-    diceArray.forEach(item => {
-      if (item.isHeld === true) {
-        die = item.value;
-      }
-    });
-
     const isAllHeld = diceArray.every(item => item.isHeld === true);
-    const isDiceEqual = diceArray.every(item => item.value === die);
+    const isDiceEqual = diceArray.every(
+      item => item.value === diceArray[0].value
+    );
 
     if (isAllHeld && isDiceEqual) {
       setTenzies(true);
