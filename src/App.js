@@ -5,9 +5,21 @@ import Confetti from "react-confetti";
 import Die from "./Die";
 
 function App() {
-  const [diceArray, setDiceArray] = useState(allNewDice);
-
+  const [diceArray, setDiceArray] = useState(allNewDice());
   const [tenzies, setTenzies] = useState(false);
+  const [numberOfRolls, setNumberOfRolls] = useState(
+    generateNewNumberOfRolls()
+  );
+  const [bestRoll, setBestRoll] = useState(
+    () =>
+      (localStorage.getItem("tenzies") &&
+        JSON.parse(localStorage.getItem("tenzies"))) ||
+      false
+  );
+
+  useEffect(() => {
+    localStorage.setItem("tenzies", JSON.stringify(bestRoll));
+  }, [bestRoll]);
 
   useEffect(() => {
     let die;
@@ -23,7 +35,10 @@ function App() {
 
     if (isAllHeld && isDiceEqual) {
       setTenzies(true);
-      console.log("You won");
+      setNumberOfRolls(prevNumberOfRolls => ({
+        ...prevNumberOfRolls,
+        time: Date.now() - prevNumberOfRolls.time,
+      }));
     }
   }, [diceArray]);
 
@@ -32,6 +47,13 @@ function App() {
       value: Math.floor(Math.random() * 6) + 1,
       isHeld: false,
       id: nanoid(),
+    };
+  }
+
+  function generateNewNumberOfRolls() {
+    return {
+      rolls: 1,
+      time: Date.now(),
     };
   }
 
@@ -47,12 +69,20 @@ function App() {
     if (tenzies) {
       setTenzies(false);
       setDiceArray(allNewDice());
+      setNumberOfRolls(generateNewNumberOfRolls());
+      setBestRoll(prevBestRoll =>
+        prevBestRoll.rolls < numberOfRolls.rolls ? prevBestRoll : numberOfRolls
+      );
     } else {
       setDiceArray(prevDiceArray =>
         prevDiceArray.map(dice =>
           dice.isHeld === true ? dice : generateNewDie()
         )
       );
+      setNumberOfRolls(prevNumberOfRolls => ({
+        ...prevNumberOfRolls,
+        rolls: prevNumberOfRolls.rolls + 1,
+      }));
     }
   }
 
@@ -73,19 +103,34 @@ function App() {
     />
   ));
 
+  const time = new Date(bestRoll.time);
+
   return (
-    <main className="main">
+    <>
       {tenzies && <Confetti />}
-      <div className="text">
-        <h1>Tenzies</h1>
-        <p>
-          Roll until all dice are the same. Click each die to freeze it at its
-          current value between rolls.
-        </p>
-      </div>
-      <div className="die--container">{diceElements}</div>
-      <button onClick={rollDice}>{tenzies ? "New Game" : "Roll"}</button>
-    </main>
+      <main className="main">
+        <div className="info">
+          <p>
+            Roll{numberOfRolls.rolls > 1 && "s"}: {numberOfRolls.rolls}
+          </p>
+          {bestRoll.rolls && (
+            <p>
+              Best Roll: {bestRoll.rolls} Time:{" "}
+              {`${time.getMinutes()}:${time.getSeconds()} minutes`}
+            </p>
+          )}
+        </div>
+        <div className="text">
+          <h1>Tenzies</h1>
+          <p>
+            Roll until all dice are the same. Click each die to freeze it at its
+            current value between rolls.
+          </p>
+        </div>
+        <div className="die--container">{diceElements}</div>
+        <button onClick={rollDice}>{tenzies ? "New Game" : "Roll"}</button>
+      </main>
+    </>
   );
 }
 
