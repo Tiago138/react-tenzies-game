@@ -116,7 +116,7 @@ function App() {
           {bestRoll.rolls && (
             <p>
               Best Roll: {bestRoll.rolls} Time:{" "}
-              {`${time.getMinutes()}:${time.getSeconds()} minutes`}
+              {`${time.getMinutes()}:${time.getSeconds()}`}
             </p>
           )}
         </div>
