@@ -1,6 +1,7 @@
 .main {
-  width: 320px;
-  height: 320px;
+  position: relative;
+  width: 350px;
+  height: 400px;
   background: $white2;
   border-radius: 6.4px;
   display: grid;
@@ -26,6 +27,15 @@
       height: 48px;
       width: 232.96px;
     }
+  }
+
+  .info {
+    position: absolute;
+    top: 130px;
+    left: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    color: $blue;
   }
 }
 
